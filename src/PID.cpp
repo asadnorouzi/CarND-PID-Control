@@ -19,21 +19,21 @@ void PID::Init(double Kp_, double Ki_, double Kd_) {
    Ki = Ki_;
    Kd = Kd_;
 
-   dK = {1.0, 1.0, 1.0};
+   dK = {0.1*Kp, 0.1*Kd, 0.1*Ki};
 
    p_error = 0.0;
    i_error = 0.0;
    d_error = 0.0;
 
    prev_cte = 0.0;
-   tol = 0.00001;
+   tol = 0.0001;
    error = 0.0;
    best_error = std::numeric_limits<double>::max();
    update_steps = 100;
    eval_steps = 2000;
    max_steps = 2*update_steps + eval_steps;
    counter = 0;
-   param_index = 0;
+   param_index = 2;
 
    twiddle_add = false;
    twiddle_subtract = false;
@@ -65,10 +65,9 @@ void PID::Twiddle(double cte) {
     if (counter % max_steps >  update_steps) {
       error += pow(cte, 2);
     }
-    if (counter % max_steps == 0) {
+    if (counter !=0 && counter % max_steps == 0) {
       if (error < best_error) { //optimized values obtained!
         best_error = error;
-
         if (counter != max_steps) {
           dK[param_index] *= 1.1;
         }
@@ -90,8 +89,8 @@ void PID::Twiddle(double cte) {
         param_index = (param_index + 1) % dK.size();
       }
       error = 0.0;
-      std::cout << "New Optmized Parameters!" << std::endl;
-      std::cout << "P = " << Kp << " I = " << Ki << "D = " << Kd << std::endl;
+      std::cout << "New Parameters!" << std::endl;
+      std::cout << "P = " << Kp << " I = " << Ki << " D = " << Kd << std::endl;
     }
     counter++;
   }
