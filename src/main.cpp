@@ -39,9 +39,9 @@ int main() {
    */
 
   //PID for steering
-  pid_steer.Init(0.21, 0.0007, 3.119);
+  pid_steer.Init(0.334611, 0.0002507, 2.96349);
   //PID for throttling
-  pid_throttle.Init(0.361, 0.0, 0.0243);
+  pid_throttle.Init(0.009955, 0.0, 20.0226185);
 
   h.onMessage([&pid_steer, &pid_throttle](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
@@ -72,15 +72,11 @@ int main() {
            pid_steer.UpdateError(cte);
            steer_value = pid_steer.TotalError();
 
-           if (steer_value > 1.0) steer_value = 1.0;
-           if (steer_value < -1.0) steer_value = -1.0;
+           if (steer_value > 1.0) steer_value = 0.5;
+           if (steer_value < -1.0) steer_value = -0.5;
 
            pid_throttle.UpdateError(fabs(cte));
            throttle_value = 0.8 - pid_throttle.TotalError();
-
-           if (throttle_value > 0.3) throttle_value = 0.3;
-           if (throttle_value < -0.3) throttle_value = -0.3;
-
 
           // DEBUG
           //std::cout << "CTE: " << cte << " Steering Value: " << steer_value
